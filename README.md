@@ -4,6 +4,8 @@ Movie Booking System 🎬 A full-stack cinema ticket booking web application bui
 [![My Skills](https://skillicons.dev/icons?i=java,spring,react,mysql,git)](https://skillicons.dev)
 # Frontend Architecture
 
+```
+
 Browser (Vite + React 18)
 │
 ├── Pages
@@ -26,18 +28,19 @@ Browser (Vite + React 18)
 │   └── AuthContext (user, login, logout, role)
 │
 ├── Router (React Router v6)
-│   ├── Public  →  / , /login , /register , /movies/:id
-│   └── Protected → /ticket , /my-bookings , /admin , /admin/halls
+│   ├── Public    →  / , /login , /register , /movies/:id
+│   └── Protected →  /ticket , /my-bookings , /admin , /admin/halls
 │
 ├── Services (Axios)
-│   ├── api.js          → Axios instance + JWT interceptor
-│   ├── authService.js  → login, register
-│   ├── movieService.js → getAll, getById
+│   ├── api.js            → Axios instance + JWT interceptor
+│   ├── authService.js    → login, register
+│   ├── movieService.js   → getAll, getById
 │   ├── bookingService.js → create, getMyBookings, cancel
-│   └── hallService.js  → getHalls, addHall, updateHall, deleteHall
+│   └── hallService.js    → getHalls, addHall, updateHall, deleteHall
 │
 └── Storage
-    └── localStorage    → token, user (role, name, email)
+    └── localStorage → token, user (role, name, email)
+```
 
 # Backend Architecture
 
