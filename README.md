@@ -44,7 +44,9 @@ Browser (Vite + React 18)
 
 # Backend Architecture
 
-(Spring Boot 4.x (:8080)
+```
+
+Spring Boot 4.x (:8080)
 │
 ├── Security Layer
 │   ├── JwtAuthFilter          → Validates JWT on every request
@@ -93,7 +95,8 @@ Browser (Vite + React 18)
     ├── movies    → FK: hall_id
     ├── bookings  → FK: user_id, movie_id
     ├── tickets   → FK: booking_id
-    └── uploads/  → Movie poster images (local folder))
+    └── uploads/  → Movie poster images (local folder)
+```
 # UseCase 
 ![Booking Page](images/UseCase.png.png)
 # Class Diagram 
