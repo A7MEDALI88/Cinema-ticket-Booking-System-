@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>bookingSystem — Complete Call Flow &amp; Architecture Documentation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #0f172a; --surface: #1e293b; --border: #334155;
+  --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8;
+  --warn: #fbbf24; --err: #f87171; --ok: #34d399;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 2.4rem; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: 1.7rem; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+h3 { font-size: 1.25rem; margin: 32px 0 12px; color: var(--accent); }
+h4 { font-size: 1.05rem; margin: 20px 0 8px; color: var(--warn); }
+p { margin: 8px 0; color: var(--muted); }
+.subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 32px; }
+.mermaid { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; overflow-x: auto; position: relative; }
+.mermaid.is-enhanced { padding: 0; overflow: hidden; min-height: 260px; }
+.mermaid-viewport { padding: 54px 24px 24px; overflow: hidden; cursor: grab; touch-action: none; min-height: 260px; }
+.mermaid-viewport.is-dragging { cursor: grabbing; }
+.mermaid-viewport svg { max-width: none !important; height: auto; transform-origin: 0 0; transition: transform 120ms ease; }
+.mermaid-toolbar { position: absolute; top: 10px; right: 10px; z-index: 3; display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(15,23,42,0.92); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+.mermaid-toolbar button, .mermaid-toolbar .zoom-level { height: 28px; min-width: 32px; border: 1px solid var(--border); border-radius: 6px; background: #1e293b; color: var(--text); font: 600 0.78rem system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; }
+.mermaid-toolbar button { cursor: pointer; }
+.mermaid-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+.mermaid-toolbar .zoom-level { min-width: 52px; color: var(--muted); background: transparent; }
+.call-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
+.call-table th { background: #1a2744; color: var(--accent); text-align: left; padding: 10px 14px; border: 1px solid var(--border); }
+.call-table td { padding: 8px 14px; border: 1px solid var(--border); vertical-align: top; }
+.call-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+.tag-async { background: #7c3aed33; color: #a78bfa; }
+.tag-class { background: #05966933; color: var(--ok); }
+.tag-func { background: #2563eb33; color: var(--accent); }
+.tag-cmd { background: #d9770633; color: var(--warn); }
+.tag-endpoint { background: #dc262633; color: var(--err); }
+.tag-hook { background: #db277733; color: #f472b6; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+.arrow-chain { font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent); padding: 10px; background: rgba(56,189,248,0.06); border-radius: 6px; }
+code { font-family: 'Fira Code', 'Cascadia Code', monospace; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 3px; font-size: 0.88em; }
+ul, ol { margin: 8px 0 8px 24px; color: var(--muted); }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.nav { position: sticky; top: 0; background: var(--bg); z-index: 10; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.9rem; }
+.nav a { text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+@media (max-width: 768px) { .container { padding: 16px; } h1 { font-size: 1.8rem; } }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>bookingSystem — Complete Call Flow &amp; Architecture Documentation</h1>
+<p class="subtitle">Generated from graphify knowledge graph: 215 nodes, 315 edges, 28 communities. Commit: unknown</p>
+
+<div class="nav">
+    <a href="#overview">Architecture Overview</a>
+    <a href="#extract-pipeline">Extraction Pipeline</a>
+    <a href="#poster-uploads-lee">Poster Uploads Lee</a>
+    <a href="#backrooms-scene-screenshot">Backrooms Scene Screenshot</a>
+</div>
+
+<!-- ====== Architecture Overview ====== -->
+<h2 id="overview">1. Architecture Overview</h2>
+
+<div class="mermaid">
+
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>207 nodes</small>")
+    class EXTRACT_PIPELINE_5F350230 module;
+    POSTER_UPLOADS_LEE_24168991("Poster Uploads Lee<br/><small>7 nodes</small>")
+    class POSTER_UPLOADS_LEE_24168991 module;
+    BACKROOMS_SCENE_SCREENSHOT_5D12DE54("Backrooms Scene Screenshot<br/><small>1 nodes</small>")
+    class BACKROOMS_SCENE_SCREENSHOT_5D12DE54 module;
+    EXTRACT_PIPELINE_5F350230 -.-> POSTER_UPLOADS_LEE_24168991
+    POSTER_UPLOADS_LEE_24168991 -.-> BACKROOMS_SCENE_SCREENSHOT_5D12DE54
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Architecture Layers</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
+      <tr><td>Extraction Pipeline</td><td>207</td><td><code>0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26</code></td></tr><tr><td>Poster Uploads Lee</td><td>7</td><td><code>11</code></td></tr><tr><td>Backrooms Scene Screenshot</td><td>1</td><td><code>27</code></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Core Flow</h4>
+    <div class="arrow-chain">Extraction Pipeline -&gt; Poster Uploads Lee -&gt; Backrooms Scene Screenshot</div>
+  </div>
+</div>
+<hr>
+<!-- ====== 2. Extraction Pipeline ====== -->
+<h2 id="extract-pipeline">2. Extraction Pipeline</h2>
+<p>Extraction Pipeline groups implementation around movie, com, bookingsystem, service, mostly in bookingSystem/service/BookingService.java, bookingSystem/service/MovieService.java, bookingSystem/controller/BookingController.java. This section covers 207 nodes and 309 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Extraction Pipeline (207 nodes, 309 edges)
+    subgraph extract_pipeline_bookingSystem_config_JwtUtil_ja_aa59fb70["bookingSystem/config/JwtUtil.java"]
+        config_jwtutil_jwtutil_603703c9("JwtUtil<br/><small>bookingSystem/config/JwtUtil.java</small>")
+        config_jwtutil_jwtutil_extractemail_2101b000("extractEmail()<br/><small>bookingSystem/config/JwtUtil.java</small>")
+        config_jwtutil_jwtutil_extractrole_3932b0a4("extractRole()<br/><small>bookingSystem/config/JwtUtil.java</small>")
+        config_jwtutil_jwtutil_generatetoken_b5565819("generateToken()<br/><small>bookingSystem/config/JwtUtil.java</small>")
+        config_jwtutil_jwtutil_getclaims_1c84e933("getClaims()<br/><small>bookingSystem/config/JwtUtil.java</small>")
+        config_jwtutil_jwtutil_getsigningkey_fe0fb2b9("getSigningKey()<br/><small>bookingSystem/config/JwtUtil.java</small>")
+        config_jwtutil_jwtutil_istokenvalid_f626f1eb("isTokenValid()<br/><small>bookingSystem/config/JwtUtil.java</small>")
+    end
+    subgraph extract_pipeline_bookingSystem_config_JwtAuthFil_249cf3b8["bookingSystem/config/JwtAuthFilter.java"]
+        config_jwtauthfilter_jwtauthfilter_f9befd25("JwtAuthFilter<br/><small>bookingSystem/config/JwtAuthFilter.java</small>")
+        config_jwtauthfilter_jwtauthfilter_dofilterinter_3ae69836("doFilterInternal()<br/><small>bookingSystem/config/JwtAuthFilter.java</small>")
+        config_jwtauthfilter_jwtauthfilter_jwtauthfilter_0a218ed6("JwtAuthFilter()<br/><small>bookingSystem/config/JwtAuthFilter.java</small>")
+    end
+    subgraph extract_pipeline_movie_bookingSystem_BookingSyst_5075d007["movie/bookingSystem/BookingSystemApplication.java"]
+        bookingsystem_bookingsystemapplication_bookingsy_6d45b930("BookingSystemApplication<br/><small>movie/bookingSystem/BookingSystemApplication.java</small>")
+        bookingsystem_bookingsystemapplication_bookingsy_b1b41209("initAdmin()<br/><small>movie/bookingSystem/BookingSystemApplication.java</small>")
+        bookingsystem_bookingsystemapplication_bookingsy_8dd67d46("main()<br/><small>movie/bookingSystem/BookingSystemApplication.java</small>")
+    end
+    controller_authcontroller_3341f34a("AuthController.java")
+    controller_bookingcontroller_37e14f02("BookingController.java")
+    service_authservice_20d917ce("AuthService.java")
+    service_bookingservice_a33335f6("BookingService.java")
+    service_movieservice_movieservice_ac816f83("MovieService<br/><small>bookingSystem/service/MovieService.java</small>")
+    bookingsystem_bookingsystemapplication_bookingsy_6d45b930 -->|method| bookingsystem_bookingsystemapplication_bookingsy_b1b41209
+    bookingsystem_bookingsystemapplication_bookingsy_6d45b930 -->|method| bookingsystem_bookingsystemapplication_bookingsy_8dd67d46
+    config_jwtauthfilter_jwtauthfilter_f9befd25 -->|method| config_jwtauthfilter_jwtauthfilter_dofilterinter_3ae69836
+    config_jwtauthfilter_jwtauthfilter_f9befd25 -->|method| config_jwtauthfilter_jwtauthfilter_jwtauthfilter_0a218ed6
+    config_jwtutil_jwtutil_603703c9 -->|method| config_jwtutil_jwtutil_extractemail_2101b000
+    config_jwtutil_jwtutil_603703c9 -->|method| config_jwtutil_jwtutil_extractrole_3932b0a4
+    config_jwtutil_jwtutil_603703c9 -->|method| config_jwtutil_jwtutil_generatetoken_b5565819
+    config_jwtutil_jwtutil_603703c9 -->|method| config_jwtutil_jwtutil_getclaims_1c84e933
+    config_jwtutil_jwtutil_603703c9 -->|method| config_jwtutil_jwtutil_getsigningkey_fe0fb2b9
+    config_jwtutil_jwtutil_603703c9 -->|method| config_jwtutil_jwtutil_istokenvalid_f626f1eb
+    config_jwtutil_jwtutil_getsigningkey_fe0fb2b9 -->|calls| config_jwtutil_jwtutil_generatetoken_b5565819
+    config_jwtutil_jwtutil_getsigningkey_fe0fb2b9 -->|calls| config_jwtutil_jwtutil_getclaims_1c84e933
+    config_jwtutil_jwtutil_extractemail_2101b000 -->|calls| config_jwtutil_jwtutil_getclaims_1c84e933
+    config_jwtutil_jwtutil_extractrole_3932b0a4 -->|calls| config_jwtutil_jwtutil_getclaims_1c84e933
+    config_jwtutil_jwtutil_istokenvalid_f626f1eb -->|calls| config_jwtutil_jwtutil_getclaims_1c84e933
+    %% Omitted for readability: 189 nodes, 0 edges
+    class config_jwtutil_jwtutil_603703c9 klass;
+    class config_jwtutil_jwtutil_extractemail_2101b000 function;
+    class config_jwtutil_jwtutil_extractrole_3932b0a4 function;
+    class config_jwtutil_jwtutil_generatetoken_b5565819 function;
+    class config_jwtutil_jwtutil_getclaims_1c84e933 function;
+    class config_jwtutil_jwtutil_getsigningkey_fe0fb2b9 function;
+    class config_jwtutil_jwtutil_istokenvalid_f626f1eb function;
+    class config_jwtauthfilter_jwtauthfilter_f9befd25 klass;
+    class config_jwtauthfilter_jwtauthfilter_dofilterinter_3ae69836 function;
+    class config_jwtauthfilter_jwtauthfilter_jwtauthfilter_0a218ed6 function;
+    class bookingsystem_bookingsystemapplication_bookingsy_6d45b930 klass;
+    class bookingsystem_bookingsystemapplication_bookingsy_b1b41209 function;
+    class bookingsystem_bookingsystemapplication_bookingsy_8dd67d46 function;
+    class controller_authcontroller_3341f34a klass;
+    class controller_bookingcontroller_37e14f02 klass;
+    class service_authservice_20d917ce klass;
+    class service_bookingservice_a33335f6 klass;
+    class service_movieservice_movieservice_ac816f83 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>BookingRepository.java</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>Booking</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small><br><code>List</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small><br><code>User</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small></td>
+  <td>BookingRepository.java node in bookingSystem/repository/BookingRepository.java.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>BookingRepository</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>findByUser()</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small></td>
+  <td>BookingRepository node in bookingSystem/repository/BookingRepository.java.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>.findByUser()</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BookingRepository</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small></td>
+  <td><code>getUserBookings()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>.findByUser() node in bookingSystem/repository/BookingRepository.java.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>User</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BookingRepository.java</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>User node in bookingSystem/repository/BookingRepository.java.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>List</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BookingRepository.java</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>List node in bookingSystem/repository/BookingRepository.java.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Booking</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BookingRepository.java</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>Booking node in bookingSystem/repository/BookingRepository.java.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>BookingService.java</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>Booking</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small><br><code>BookingRepository</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small><br><code>BookingRequest</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small><br>+6 more</td>
+  <td>BookingService.java node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>BookingService</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>BookingService()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small><br><code>cancelBooking()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small><br><code>createBooking()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small><br>+2 more</td>
+  <td>BookingService node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>.BookingService()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BookingService</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.BookingService() node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>BookingRepository</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BookingService.java</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>BookingRepository node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>MovieRepository</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BookingService.java</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>MovieRepository node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>UserRepository</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BookingService.java</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>UserRepository node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>TicketService</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>TicketService node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>.createBooking()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BookingService</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small><br><code>findByEmail()</code><br><small style="color:var(--muted)">bookingSystem/repository/UserRepository.java</small></td>
+  <td><code>generateTicket()</code><br><small style="color:var(--muted)">bookingSystem/service/TicketService.java</small><br><code>mapToResponse()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>.createBooking() node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>String</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>String node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>BookingRequest</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BookingService.java</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>BookingRequest node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>BookingResponse</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BookingService.java</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>BookingResponse node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Transactional</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BookingService.java</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>Transactional node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>.getUserBookings()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BookingService</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small><br><code>findByEmail()</code><br><small style="color:var(--muted)">bookingSystem/repository/UserRepository.java</small><br><code>findByUser()</code><br><small style="color:var(--muted)">bookingSystem/repository/BookingRepository.java</small><br>+1 more</td>
+  <td><code>getTicketByBookingId()</code><br><small style="color:var(--muted)">bookingSystem/service/TicketService.java</small><br><code>mapToResponse()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>.getUserBookings() node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>List</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BookingService.java</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>List node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>.cancelBooking()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BookingService</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.cancelBooking() node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>Long</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Long node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>.mapToResponse()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>BookingService</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small><br><code>createBooking()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small><br><code>getUserBookings()</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.mapToResponse() node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>Booking</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BookingService.java</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>Booking node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Ticket</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>BookingService.java</code><br><small style="color:var(--muted)">bookingSystem/service/BookingService.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>Ticket node in bookingSystem/service/BookingService.java.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>JwtAuthFilter.java</code><br><small style="color:var(--muted)">bookingSystem/config/JwtAuthFilter.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>FilterChain</code><br><small style="color:var(--muted)">bookingSystem/config/JwtAuthFilter.java</small><br><code>HttpServletRequest</code><br><small style="color:var(--muted)">bookingSystem/config/JwtAuthFilter.java</small><br><code>HttpServletResponse</code><br><small style="color:var(--muted)">bookingSystem/config/JwtAuthFilter.java</small><br>+1 more</td>
+  <td>JwtAuthFilter.java node in bookingSystem/config/JwtAuthFilter.java.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>JwtAuthFilter</code><br><small style="color:var(--muted)">bookingSystem/config/JwtAuthFilter.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>doFilterInternal()</code><br><small style="color:var(--muted)">bookingSystem/config/JwtAuthFilter.java</small><br><code>JwtAuthFilter()</code><br><small style="color:var(--muted)">bookingSystem/config/JwtAuthFilter.java</small></td>
+  <td>JwtAuthFilter node in bookingSystem/config/JwtAuthFilter.java.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>OncePerRequestFilter</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>JwtAuthFilter.java</code><br><small style="color:var(--muted)">bookingSystem/config/JwtAuthFilter.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>OncePerRequestFilter node in project.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>.JwtAuthFilter()</code><br><small style="color:var(--muted)">bookingSystem/config/JwtAuthFilter.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>JwtAuthFilter</code><br><small style="color:var(--muted)">bookingSystem/config/JwtAuthFilter.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.JwtAuthFilter() node in bookingSystem/config/JwtAuthFilter.java.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>JwtUtil</code><br><small style="color:var(--muted)">bookingSystem/config/JwtAuthFilter.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>JwtUtil node in bookingSystem/config/JwtAuthFilter.java.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>bookingSystem/service/BookingService.java</code></td><td>19 nodes</td></tr>
+<tr><td><code>bookingSystem/service/MovieService.java</code></td><td>17 nodes</td></tr>
+<tr><td><code>bookingSystem/controller/BookingController.java</code></td><td>16 nodes</td></tr>
+<tr><td><code>bookingSystem/controller/AdminController.java</code></td><td>15 nodes</td></tr>
+<tr><td><code>bookingSystem/config/SecurityConfig.java</code></td><td>12 nodes</td></tr>
+<tr><td><code>bookingSystem/config/JwtUtil.java</code></td><td>11 nodes</td></tr>
+<tr><td><code>bookingSystem/controller/MovieController.java</code></td><td>11 nodes</td></tr>
+<tr><td><code>bookingSystem/service/AuthService.java</code></td><td>11 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: references x128, imports x68, method x54, contains x30. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 3. Poster Uploads Lee ====== -->
+<h2 id="poster-uploads-lee">3. Poster Uploads Lee</h2>
+<p>Poster Uploads Lee groups implementation around poster, uploads, lee, mummy, mostly in main/resources/banner.txt, uploads/1c1155f3-77c3-4c92-92c3-abc3e2829b88_House_of_the_Dragon_season_2.png, uploads/2cce486c-0f6b-427f-ac23-ff4b88b59445_images.jpg. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Poster Uploads Lee (7 nodes, 6 edges)
+    banner_text_6b1f4601("Movies Online Banner<br/><small>main/resources/banner.txt</small>")
+    house_of_the_dragon_poster_dc019bdd("House of the Dragon Season 2 Poster<br/><small>uploads/1c1155f3-77c3-4c92-92c3-abc3e2829b88_House_of_the_Dragon_season_2.png</small>")
+    obsession_poster_1_62cf1b88("Obsession Movie Poster<br/><small>uploads/2cce486c-0f6b-427f-ac23-ff4b88b59445_images.jpg</small>")
+    the_mummy_poster_1_49aeac77("Lee Cronin's The Mummy Poster<br/><small>uploads/2eca3d11-4994-4cc3-ad3d-aa85f0671776__Horizontal_Lee-Cronin_s-The-Mummy-13129fa0-395f-11f1-840e-63804c65ce25.jpg</small>")
+    obsession_poster_2_54773ebd("Obsession Movie Poster (Duplicate)<br/><small>uploads/4febf64d-b181-4fc1-88b3-3108b37288a9_images.jpg</small>")
+    the_mummy_poster_2_b05fb5e2("Lee Cronin's The Mummy Poster (Duplicate)<br/><small>uploads/537d24e3-48ad-4eff-b3bc-7864382f660f__Horizontal_Lee-Cronin_s-The-Mummy-13129fa0-395f-11f1-840e-63804c65ce25.jpg</small>")
+    the_punisher_poster_a3631c4b("The Punisher: One Last Kill Poster<br/><small>uploads/90183438-0c9d-46bf-b0dd-70cdffc6c6d0_images (1).jpg</small>")
+    obsession_poster_1_62cf1b88 -->|semantically similar to| obsession_poster_2_54773ebd
+    the_mummy_poster_1_49aeac77 -->|semantically similar to| the_mummy_poster_2_b05fb5e2
+    class banner_text_6b1f4601 concept;
+    class house_of_the_dragon_poster_dc019bdd klass;
+    class obsession_poster_1_62cf1b88 klass;
+    class the_mummy_poster_1_49aeac77 klass;
+    class obsession_poster_2_54773ebd klass;
+    class the_mummy_poster_2_b05fb5e2 klass;
+    class the_punisher_poster_a3631c4b klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>Movies Online Banner</code><br><small style="color:var(--muted)">main/resources/banner.txt</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Movies Online Banner.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>House of the Dragon Season 2 Poster</code><br><small style="color:var(--muted)">uploads/1c1155f3-77c3-4c92-92c3-abc3e2829b88_House_of_the_Dragon_season_2.png</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Obsession Movie Poster</code><br><small style="color:var(--muted)">uploads/2cce486c-0f6b-427f-ac23-ff4b88b59445_images.jpg</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Obsession Movie Poster node in uploads/2cce486c-0f6b-427f-ac23-ff4b88b59445_images.jpg.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Lee Cronin&#x27;s The Mummy Poster</code><br><small style="color:var(--muted)">uploads/2eca3d11-4994-4cc3-ad3d-aa85f0671776__Horizontal_Lee-Cronin_s-The-Mummy-13129fa0-395f-11f1-840e-63804c65ce25.jpg</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Lee Cronin&#x27;s The Mummy Poster node in uploads/2eca3d11-4994-4cc3-ad3d-aa85f0671776__Horizontal_Lee-Cronin_s-The-Mummy-13129fa0-395f-11f1-840e-63804c65ce25.jpg.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Obsession Movie Poster (Duplicate)</code><br><small style="color:var(--muted)">uploads/4febf64d-b181-4fc1-88b3-3108b37288a9_images.jpg</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Obsession Movie Poster (Duplicate) node in uploads/4febf64d-b181-4fc1-88b3-3108b37288a9_images.jpg.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Lee Cronin&#x27;s The Mummy Poster (Duplicate)</code><br><small style="color:var(--muted)">uploads/537d24e3-48ad-4eff-b3bc-7864382f660f__Horizontal_Lee-Cronin_s-The-Mummy-13129fa0-395f-11f1-840e-63804c65ce25.jpg</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Lee Cronin&#x27;s The Mummy Poster (Duplicate) node in uploads/537d24e3-48ad-4eff-b3bc-7864382f660f__Horizontal_Lee-Cronin_s-The-Mummy-13129fa0-395f-11f1-840e-63804c65ce25.jpg.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>The Punisher: One Last Kill Poster</code><br><small style="color:var(--muted)">uploads/90183438-0c9d-46bf-b0dd-70cdffc6c6d0_images (1).jpg</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>The Punisher: One Last Kill Poster node in uploads/90183438-0c9d-46bf-b0dd-70cdffc6c6d0_images (1).jpg.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>main/resources/banner.txt</code></td><td>1 nodes</td></tr>
+<tr><td><code>uploads/1c1155f3-77c3-4c92-92c3-abc3e2829b88_House_of_the_Dragon_season_2.png</code></td><td>1 nodes</td></tr>
+<tr><td><code>uploads/2cce486c-0f6b-427f-ac23-ff4b88b59445_images.jpg</code></td><td>1 nodes</td></tr>
+<tr><td><code>uploads/2eca3d11-4994-4cc3-ad3d-aa85f0671776__Horizontal_Lee-Cronin_s-The-Mummy-13129fa0-395f-11f1-840e-63804c65ce25.jpg</code></td><td>1 nodes</td></tr>
+<tr><td><code>uploads/4febf64d-b181-4fc1-88b3-3108b37288a9_images.jpg</code></td><td>1 nodes</td></tr>
+<tr><td><code>uploads/537d24e3-48ad-4eff-b3bc-7864382f660f__Horizontal_Lee-Cronin_s-The-Mummy-13129fa0-395f-11f1-840e-63804c65ce25.jpg</code></td><td>1 nodes</td></tr>
+<tr><td><code>uploads/90183438-0c9d-46bf-b0dd-70cdffc6c6d0_images (1).jpg</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: semantically similar to x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 4. Backrooms Scene Screenshot ====== -->
+<h2 id="backrooms-scene-screenshot">4. Backrooms Scene Screenshot</h2>
+<p>Backrooms Scene Screenshot groups implementation around backrooms, scene, screenshot, uploads, mostly in uploads/3deac3db-d8a8-46d2-b7ee-c3fa231ed918_Backrooms-4b4e928.jpg. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Backrooms Scene Screenshot (1 nodes, 0 edges)
+    backrooms_screenshot_3be468e1("Backrooms Scene Screenshot<br/><small>uploads/3deac3db-d8a8-46d2-b7ee-c3fa231ed918_Backrooms-4b4e928.jpg</small>")
+    class backrooms_screenshot_3be468e1 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>Backrooms Scene Screenshot</code><br><small style="color:var(--muted)">uploads/3deac3db-d8a8-46d2-b7ee-c3fa231ed918_Backrooms-4b4e928.jpg</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Backrooms Scene Screenshot node in uploads/3deac3db-d8a8-46d2-b7ee-c3fa231ed918_Backrooms-4b4e928.jpg.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>uploads/3deac3db-d8a8-46d2-b7ee-c3fa231ed918_Backrooms-4b4e928.jpg</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: No high-confidence call edges detected. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<h2 id="stats">Project Statistics</h2>
+
+<div class="grid">
+  <div class="card">
+    <h4>Graph</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>Nodes</td><td>215</td></tr>
+      <tr><td>Edges</td><td>315</td></tr>
+      <tr><td>Hyperedges</td><td>0</td></tr>
+      <tr><td>Communities</td><td>28</td></tr>
+      <tr><td>Documented Sections</td><td>3</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Edge Confidence</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>EXTRACTED</td><td>296</td></tr>
+      <tr><td>INFERRED</td><td>19</td></tr>
+      <tr><td>AMBIGUOUS</td><td>0</td></tr>
+    </table>
+  </div>
+</div>
+
+<div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
+  <p>bookingSystem — Architecture Documentation</p>
+  <p>Generated: 2026-06-14 17:15 UTC · graphify callflow-html</p>
+</div>
+
+</div><!-- .container -->
+
+<script>
+(function () {
+  const mermaidConfig = {
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true, useMaxWidth: true },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#38bdf8',
+      secondaryColor: '#0f172a',
+      tertiaryColor: '#334155',
+      lineColor: '#64748b',
+      textColor: '#e2e8f0',
+    }
+  };
+
+  mermaid.initialize(mermaidConfig);
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function enhanceMermaidDiagrams() {
+    document.querySelectorAll('.mermaid').forEach((container) => {
+      if (container.dataset.zoomReady === 'true') return;
+      const svg = container.querySelector('svg');
+      if (!svg) return;
+
+      container.dataset.zoomReady = 'true';
+      container.classList.add('is-enhanced');
+
+      const viewport = document.createElement('div');
+      viewport.className = 'mermaid-viewport';
+      svg.parentNode.insertBefore(viewport, svg);
+      viewport.appendChild(svg);
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-toolbar';
+      toolbar.innerHTML = [
+        '<button type="button" data-action="zoom-out" title="Zoom out">-</button>',
+        '<span class="zoom-level" data-role="level">100%</span>',
+        '<button type="button" data-action="zoom-in" title="Zoom in">+</button>',
+        '<button type="button" data-action="fit" title="Fit width">Fit</button>',
+        '<button type="button" data-action="reset" title="Reset view">Reset</button>'
+      ].join('');
+      container.insertBefore(toolbar, viewport);
+
+      const state = { scale: 1, x: 0, y: 0, dragging: false, startX: 0, startY: 0, originX: 0, originY: 0 };
+      const level = toolbar.querySelector('[data-role="level"]');
+
+      function applyTransform() {
+        svg.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+        level.textContent = `${Math.round(state.scale * 100)}%`;
+      }
+
+      function zoomBy(delta) {
+        state.scale = clamp(state.scale + delta, 0.25, 3);
+        applyTransform();
+      }
+
+      function reset() {
+        state.scale = 1;
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      function fitWidth() {
+        const rawWidth = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width
+          ? svg.viewBox.baseVal.width
+          : svg.getBoundingClientRect().width / state.scale;
+        if (!rawWidth) {
+          reset();
+          return;
+        }
+        state.scale = clamp((viewport.clientWidth - 48) / rawWidth, 0.25, 1.4);
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      toolbar.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const action = button.dataset.action;
+        if (action === 'zoom-in') zoomBy(0.15);
+        if (action === 'zoom-out') zoomBy(-0.15);
+        if (action === 'fit') fitWidth();
+        if (action === 'reset') reset();
+      });
+
+      viewport.addEventListener('wheel', (event) => {
+        if (!event.ctrlKey && !event.metaKey) return;
+        event.preventDefault();
+        zoomBy(event.deltaY < 0 ? 0.1 : -0.1);
+      }, { passive: false });
+
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        state.dragging = true;
+        state.startX = event.clientX;
+        state.startY = event.clientY;
+        state.originX = state.x;
+        state.originY = state.y;
+        viewport.classList.add('is-dragging');
+        viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', (event) => {
+        if (!state.dragging) return;
+        state.x = state.originX + event.clientX - state.startX;
+        state.y = state.originY + event.clientY - state.startY;
+        applyTransform();
+      });
+
+      function endDrag(event) {
+        if (!state.dragging) return;
+        state.dragging = false;
+        viewport.classList.remove('is-dragging');
+        if (viewport.hasPointerCapture(event.pointerId)) {
+          viewport.releasePointerCapture(event.pointerId);
+        }
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      applyTransform();
+    });
+  }
+
+  function renderMermaid() {
+    const result = mermaid.run
+      ? mermaid.run({ querySelector: '.mermaid' })
+      : Promise.resolve();
+    Promise.resolve(result)
+      .then(enhanceMermaidDiagrams)
+      .catch((error) => {
+        console.error('Mermaid render failed:', error);
+        enhanceMermaidDiagrams();
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderMermaid);
+  } else {
+    renderMermaid();
+  }
+})();
+</script>
+
+</body>
+</html>
