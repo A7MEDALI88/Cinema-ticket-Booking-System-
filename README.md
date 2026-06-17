@@ -1,7 +1,13 @@
 # Cinema-ticket-Booking-System-
 Movie Booking System 🎬 A full-stack cinema ticket booking web application built with Spring Boot (Backend) and React (Frontend), featuring JWT authentication, interactive seat selection, QR code e-tickets, and an admin dashboard for managing movies and halls
-
+# Stack 
 [![My Skills](https://skillicons.dev/icons?i=java,spring,react,mysql,git)](https://skillicons.dev)
+
+## Tools
+
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" width="40"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="40"/>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postman/postman-original.svg" width="40"/>
 # Frontend Architecture
 
 ```
