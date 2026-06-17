@@ -3,6 +3,7 @@ Movie Booking System 🎬 A full-stack cinema ticket booking web application bui
 
 [![My Skills](https://skillicons.dev/icons?i=java,spring,react,mysql,git)](https://skillicons.dev)
 # Frontend Architecture
+
 Browser (Vite + React 18)
 │
 ├── Pages
@@ -39,7 +40,8 @@ Browser (Vite + React 18)
     └── localStorage    → token, user (role, name, email)
 
 # Backend Architecture
-Spring Boot 4.x (:8080)
+
+(Spring Boot 4.x (:8080)
 │
 ├── Security Layer
 │   ├── JwtAuthFilter          → Validates JWT on every request
@@ -88,7 +90,7 @@ Spring Boot 4.x (:8080)
     ├── movies    → FK: hall_id
     ├── bookings  → FK: user_id, movie_id
     ├── tickets   → FK: booking_id
-    └── uploads/  → Movie poster images (local folder)
+    └── uploads/  → Movie poster images (local folder))
 # UseCase 
 ![Booking Page](images/UseCase.png.png)
 # Class Diagram 
