@@ -5,6 +5,6 @@ Movie Booking System 🎬 A full-stack cinema ticket booking web application bui
 
 
 # UseCase 
-![Booking Page](images/useCase.png)
+![Booking Page](images/UseCase.png.png)
 # Class Diagram 
 ![Home](images/classDiagram.png)
