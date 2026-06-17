@@ -3,11 +3,8 @@ Movie Booking System 🎬 A full-stack cinema ticket booking web application bui
 # Stack 
 [![My Skills](https://skillicons.dev/icons?i=java,spring,react,mysql,git)](https://skillicons.dev)
 
-## Tools
-
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" width="40"/>
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="40"/>
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postman/postman-original.svg" width="40"/>
+## there is graphify file for the System 
+(images/1_Mh4SWSK2ppQyDECTIUe1kg.png)
 # Frontend Architecture
 
 ```
